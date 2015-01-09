@@ -14,6 +14,7 @@ public class DataOnly {
    int i;//new int
    float f;//new float
    boolean b;//new boolean
+   //PT: I'd rather you had two classes, one for main and the other for DataOnly
     public static void main(String[] args) {
         // TODO code application logic here
         DataOnly d = new DataOnly();//Creates a new DataOnly
