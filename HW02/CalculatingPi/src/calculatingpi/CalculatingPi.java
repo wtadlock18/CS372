@@ -17,6 +17,7 @@ public class CalculatingPi {
      */
     public static void main(String[] args) {
         Pi pi=new Pi();
+        //PT -- good check here
         if(args.length>0){
             pi.Calculate(Integer.parseInt(args[0]));
         }else{
