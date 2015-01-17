@@ -4,9 +4,12 @@
  * and open the template in the editor.
  */
 package eventmanager;
+
 import java.io.*;
 import javax.swing.MutableComboBoxModel;
 import java.util.*;
+import java.util.regex.*;
+
 /**
  *
  * @author dub10_000
@@ -16,11 +19,14 @@ public class EventManager extends javax.swing.JFrame {
     /**
      * Creates new form EventManager
      */
-    private int[] months={31,28,31,30,31,30,31,31,30,31,30,31};
+    private final int[] months = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    ArrayList<Event> events = new ArrayList();
+    String f = new String("events.txt");
+    String sortType = "Date";
+
     public EventManager() {
         initComponents();
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -32,29 +38,36 @@ public class EventManager extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        textArea = new javax.swing.JTextArea();
         name = new javax.swing.JTextField();
         location = new javax.swing.JTextField();
         yearfield = new javax.swing.JTextField();
         Submit = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        dateSorter = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        nameSorter = new javax.swing.JButton();
+        locationSorter = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        test = new javax.swing.JLabel();
         monthfield = new javax.swing.JComboBox();
         dayfield = new javax.swing.JComboBox();
+        sortedby = new javax.swing.JLabel();
+        info = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        textArea.setEditable(false);
+        textArea.setColumns(20);
+        textArea.setRows(5);
+        jScrollPane1.setViewportView(textArea);
 
         name.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -64,6 +77,11 @@ public class EventManager extends javax.swing.JFrame {
 
         location.setToolTipText("");
 
+        yearfield.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                yearfieldFocusLost(evt);
+            }
+        });
         yearfield.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 yearfieldKeyReleased(evt);
@@ -77,21 +95,26 @@ public class EventManager extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Date");
-
-        jLabel1.setText("Order by:");
-
-        jButton3.setText("Name");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        dateSorter.setText("Date");
+        dateSorter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                dateSorterActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Location");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        jLabel1.setText("Order by:");
+
+        nameSorter.setText("Name");
+        nameSorter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                nameSorterActionPerformed(evt);
+            }
+        });
+
+        locationSorter.setText("Location");
+        locationSorter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                locationSorterActionPerformed(evt);
             }
         });
 
@@ -105,9 +128,7 @@ public class EventManager extends javax.swing.JFrame {
 
         jLabel6.setText("Year");
 
-        test.setText("jLabel7");
-
-        monthfield.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "  ", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
+        monthfield.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
         monthfield.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 monthfieldActionPerformed(evt);
@@ -116,65 +137,64 @@ public class EventManager extends javax.swing.JFrame {
 
         dayfield.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "  " }));
 
+        sortedby.setText("Currently Ordered by: Date");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jScrollPane1)
             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButton4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton2)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(11, 11, 11)
-                                    .addComponent(jLabel1))
-                                .addComponent(jButton3)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 97, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(test)
-                        .addGap(114, 114, 114))))
-            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(Submit)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(195, 195, 195)
+                        .addComponent(Submit))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(dateSorter)
+                        .addGap(18, 18, 18)
+                        .addComponent(nameSorter)
+                        .addGap(18, 18, 18)
+                        .addComponent(locationSorter)
+                        .addGap(40, 40, 40)
+                        .addComponent(sortedby)))
+                .addContainerGap(71, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(116, 116, 116)
+                        .addComponent(info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(49, 49, 49)
-                                .addComponent(jLabel3))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(location, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel2)
+                            .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(location, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(yearfield, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))
+                            .addComponent(jLabel6))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(32, 32, 32)
+                        .addComponent(jLabel5))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(monthfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(32, 32, 32)
-                                .addComponent(jLabel5)
-                                .addGap(21, 21, 21))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(monthfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(dayfield, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(dayfield, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(93, 93, 93))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(17, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
@@ -190,22 +210,18 @@ public class EventManager extends javax.swing.JFrame {
                     .addComponent(dayfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(Submit)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(18, 18, 18)
+                .addComponent(info, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(test))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(7, 7, 7)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                    .addComponent(dateSorter)
+                    .addComponent(nameSorter)
+                    .addComponent(locationSorter)
+                    .addComponent(sortedby))
+                .addGap(26, 26, 26))
         );
 
         pack();
@@ -215,72 +231,168 @@ public class EventManager extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_nameActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void nameSorterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameSorterActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+        sortType="Name";
+        sort();
+                
+    }//GEN-LAST:event_nameSorterActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void locationSorterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_locationSorterActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void dateUpdate(){
-        String s= (String)monthfield.getSelectedItem();
-        int m=Integer.parseInt(s);
-        MutableComboBoxModel model=(MutableComboBoxModel)dayfield.getModel();
-        int days=months[m-1];
-        int y=Integer.parseInt(yearfield.getText());
-        if(m==2&&y%4==0){
+        sortType="Location";
+        sort();
+    }//GEN-LAST:event_locationSorterActionPerformed
+    
+    private void dateUpdate() throws IllegalArgumentException {
+        if (yearfield.getText().equals("")) {
+            throw new IllegalArgumentException("Please enter something into the year field");
+        }
+        String s = (String) monthfield.getSelectedItem();
+        int m = Integer.parseInt(s);
+        MutableComboBoxModel model = (MutableComboBoxModel) dayfield.getModel();
+        int days = months[m - 1];
+        int y = Integer.parseInt(yearfield.getText());
+        if (m == 2 && y % 4 == 0) {
             days++;
         }
-        for(int i= model.getSize()-1;i>=0;i--){
+        for (int i = model.getSize() - 1; i >= 0; i--) {
             model.removeElementAt(i);
         }
-        for(int i=1;i<=days;i++){
-            model.addElement(i);
+        for (int i = 1; i <= days; i++) {
+            if (i < 10) {
+                model.addElement("0" + i);
+            } else {
+                model.addElement(i);
+            }
         }
         dayfield.setModel(model);
         
     }
+
+    private void sort() {
+        if (sortType.equals("Date")) {
+            events.sort(Event.DateComparator);
+        }
+        if (sortType.equals("Location")) {
+            events.sort(Event.LocationComparator);
+        }
+        if (sortType.equals("Name")) {
+            events.sort(Event.NameComparator);
+        }
+        textArea.setText(null);
+        for (int i = 0; i < events.size(); i++) {
+            
+            textArea.append(events.get(i).toString() + "\n");
+        }
+        sortedby.setText("Currently Ordered by: "+sortType);
+    }
     private void SubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitActionPerformed
         // TODO add your handling code here:
-       
-        String date=yearfield.getText()+ monthfield.getSelectedItem()+ dayfield.getSelectedItem();
-       
-        Event e=new Event(date,location.getText(),name.getText());
-        File f = new File("C:\\Users\\dub10_000\\Documents\\Whitworth\\JavaAppDev\\events.txt");
+        String l=location.getText();
+        String n=name.getText();
+        String year = yearfield.getText();
+        
+        if(n.equals("")){
+            info.setText("Please enter a name for the event");
+            return;
+        }
+        if(l.equals("")){
+            info.setText("Please enter a location for the event");
+            return;
+        }
+        if(year.equals("")){
+            info.setText("Please enter a year for the event");
+            return;
+        }
+        int length = year.length();
+        if (length < 4) {
+            for (int i = 0; i < 4 - length; i++) {
+                year = "0" + year;
+            }
+        }
+        
+        String date = year + monthfield.getSelectedItem() + dayfield.getSelectedItem();
+        
+        Event e = new Event(date, l, n);
+        events.add(e);
         try {
             
-            BufferedWriter wrtr = new BufferedWriter(new FileWriter(f,true));
-            String line;
-            line=e.toString();
+            BufferedWriter wrtr = new BufferedWriter(new FileWriter(f, true));
+            String line = e.toString();
             wrtr.write(line);
-            wrtr.newLine();    
+            wrtr.newLine();
             wrtr.close();
-        }
-        catch (Exception ex) {
+            textArea.append(line + "\n");
+        } catch (Exception ex) {
             System.out.println("Something went wrong somewhere.");
         }
-        test.setText(e.toString());
 
     }//GEN-LAST:event_SubmitActionPerformed
 
     private void monthfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monthfieldActionPerformed
         // TODO add your handling code here:
-       try{
+        try {
             dateUpdate();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ;
         }
-        
+
     }//GEN-LAST:event_monthfieldActionPerformed
 
     private void yearfieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_yearfieldKeyReleased
-        try{
-            dateUpdate();
-        }catch(Exception ex){
-            ;
-        }
+
     }//GEN-LAST:event_yearfieldKeyReleased
+
+    private void yearfieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_yearfieldFocusLost
+        // TODO add your handling code here:
+
+        try {
+            dateUpdate();
+        } catch (IllegalArgumentException ex) {
+            info.setText(ex.getMessage());
+            System.out.println(ex.getMessage());
+        }
+
+    }//GEN-LAST:event_yearfieldFocusLost
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+
+        try {
+            BufferedReader rdr = new BufferedReader(new FileReader(f));
+            String line;
+            //ArrayList<Event> events = new ArrayList();
+            String[] patterns = {"Name:(.*) Location:", "Location:(.*) Month:", "Month:(.*) Day:", "Day:(.*) Year:", "Year:(.*)"};
+            String[] info = {"", "", "", "", ""};
+            while ((line = rdr.readLine()) != null) {
+                for (int i = 0; i < 5; i++) {
+                    Pattern p = Pattern.compile(patterns[i]);
+                    Matcher m = p.matcher(line);
+                    while (m.find()) {
+                        info[i] = m.group(1);
+                    }
+                }
+                Event event = new Event(info[4] + info[2] + info[3], info[0], info[1]);
+                events.add(event);
+                textArea.append(event.toString() + "\n");
+            }
+            rdr.close();
+            sort();
+            
+        } catch (Exception ex) {
+            System.out.printf("You failed. %s", ex.getMessage());
+            
+        }
+
+    }//GEN-LAST:event_formWindowOpened
+
+    private void dateSorterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dateSorterActionPerformed
+        // TODO add your handling code here:
+        sortType="Date";
+        sort();
+        
+    }//GEN-LAST:event_dateSorterActionPerformed
 
     /**
      * @param args the command line arguments
@@ -319,10 +431,9 @@ public class EventManager extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Submit;
+    private javax.swing.JButton dateSorter;
     private javax.swing.JComboBox dayfield;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JLabel info;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -330,11 +441,13 @@ public class EventManager extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField location;
+    private javax.swing.JButton locationSorter;
     private javax.swing.JComboBox monthfield;
     private javax.swing.JTextField name;
-    private javax.swing.JLabel test;
+    private javax.swing.JButton nameSorter;
+    private javax.swing.JLabel sortedby;
+    private javax.swing.JTextArea textArea;
     private javax.swing.JTextField yearfield;
     // End of variables declaration//GEN-END:variables
 }

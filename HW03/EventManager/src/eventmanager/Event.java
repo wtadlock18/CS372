@@ -12,7 +12,7 @@ import java.util.*;
 public class Event {
     
     private String location, name, month, day, year, date;
-    public Event(String date,String location,String name) throws IllegalArgumentException{
+    public Event(String date,String name,String location) throws IllegalArgumentException{
         //if(year<=0||day<=0||month<=0){
             
         //}
@@ -25,13 +25,22 @@ public class Event {
     }
     @Override
     public String toString(){
-        return "Name:"+name+" Location:"+location+" Month:"+month+" Day:"+day+" Year:"+year;
+        return "Name:" + getName() + " Location:" + getLocation() + " Month:" + month + " Day:" + day + " Year:" + year;
     }
     public String getName(){
         return name;
     }
     public String getLocation(){
         return location;
+    }
+    public String getMonth(){
+        return month;
+    }
+    public String getDay(){
+        return day;
+    }
+    public String getYear(){
+        return year;
     }
     public String getDate(){
         return date;
