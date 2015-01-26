@@ -17,6 +17,7 @@ public class calculates {
      * Messy constructor, but YOLO
      * @param ints the array which we use to find min, max, and average
      */
+    //PT -- if this parameter is List<Integer>, it can work with many more types of objects
     public calculates(ArrayList<Integer> ints){
         for(int i=0;i<ints.size();i++){
             int n=ints.get(i);

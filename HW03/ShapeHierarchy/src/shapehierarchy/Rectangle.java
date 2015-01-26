@@ -29,6 +29,8 @@ public class Rectangle extends Shape{
      * @return  the type of shape this is
      */
     public String toString(){
+        //PT -- good, but make it more informative:
+        // return String.format("Rectangle (%f X %f)", width, length);
         return "Rectangle";
     }
     @Override

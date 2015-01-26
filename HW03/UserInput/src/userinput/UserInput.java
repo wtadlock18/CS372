@@ -18,6 +18,7 @@ public class UserInput {
     public static void main(String[] args) {
         // TODO code application logic here
         ArrayList<Integer> ints=new input().getInts(10);
+        //PT -- stuff?
         calculates stuff=new calculates(ints);
         System.out.printf("Minimun Value is %d \n",(int)stuff.getMin());
         System.out.printf("Maximun Value is %d \n",(int)stuff.getMax());

@@ -19,6 +19,7 @@ public class EventManager extends javax.swing.JFrame {
     /**
      * Creates new form EventManager
      */
+    //PT -- this kind of logic should be in a separate class. -4
     private final int[] months = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     ArrayList<Event> events = new ArrayList();
     String f = new String("events.txt");
@@ -289,6 +290,7 @@ public class EventManager extends javax.swing.JFrame {
     }
     private void SubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitActionPerformed
         // TODO add your handling code here:
+        //PT -- this can be cleaned up quite a bit. -2
         String l=location.getText();
         String n=name.getText();
         String year = yearfield.getText();
