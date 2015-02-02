@@ -1,2 +1,0 @@
-game.windowHandler
-game.Board

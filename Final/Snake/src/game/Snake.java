@@ -27,17 +27,25 @@ public class Snake {
         reset(l);
     }
 
+    /**
+     *Creates a new snake with a base body length
+     * @param l The base length for the Snake
+     */
     public void reset(int l) {
         mBody.clear();
+        
         for (; l > 0; l--) {
-            mBody.add(new Body(7, l));
+            mBody.add(new Body(2, l));
             //mBody.add(new Body(7,3));
             //mBody.add(new Body(7,2));
             //mBody.add(new Body(7,1));
         }
         mDirection = DIRECTION.RIGHT;
     }
-
+    /**
+     * Changes the direction that the Snake will be drawn
+     * @param d The new direction of the Snake
+     */
     public void changeDirection(DIRECTION d) {
         switch (d) {
             case UP:
@@ -64,10 +72,20 @@ public class Snake {
         }
         mDirection = d;
     }
+    
+    /**
+     * The current direction the snake is going
+     * @return current direction
+     */
     public DIRECTION getDir(){
         return mDirection;
     }
 
+    /**
+     * Moves the snake to the next space, drawing a new square in front and a blank Square behind
+     * @param b The board in which the snake is drawn on
+     * @param g The graphics which enable everything to be drawn
+     */
     public void move(Board b,Graphics g) {
         
         Body head;
@@ -95,6 +113,7 @@ public class Snake {
         if (f.row == head.row && f.col == head.col) {
             mBody.add(0, f);
             b.produceFood();
+            b.drawScore(g);
             g.setColor(Color.blue);
             g.fillRect(mBody.get(0).col * TileWidth + XOffset, mBody.get(0).row * TileHeight + YOffset, TileWidth, TileHeight);
             //b.repaint();
@@ -113,7 +132,9 @@ public class Snake {
         if (checkBodyCollision() || checkBoundCollision(b)) {
             //
             
-            
+            g.setColor(Color.orange);
+            g.fillRect(mBody.get(0).col * TileWidth + XOffset, mBody.get(0).row * TileHeight + YOffset, TileWidth, TileHeight);
+
             //b.setWait(-1);
             b.setState(STATE.DEAD);
         }
@@ -121,14 +142,27 @@ public class Snake {
         
     }
 
+    /**
+     * Gets the location of each body piece
+     * @param index Which body piece is being searched for
+     * @return The body piece which holds a specific location
+     */
     public Body getBody(int index) {
         return mBody.get(index);
     }
 
+    /**
+     * Lets everything else be updated based on the length of the snake
+     * @return the current length of the snake
+     */
     public int getLength() {
         return mBody.size();
     }
 
+    /**
+     * Checks if the snake is colliding with itself
+     * @return true if it is colliding, false if it isn't
+     */
     public boolean checkBodyCollision() {
         Body head = getBody(0);
         for (int i = 1; i < getLength(); i++) {
@@ -139,6 +173,10 @@ public class Snake {
         return false;
     }
 
+    /**
+     * Checks if the snake is colliding with the bounds
+     * @return true if it is colliding, false if it isn't
+     */
     public boolean checkBoundCollision(Board b) {
         Body head = getBody(0);
         if (head.col >= b.Column || head.col < 0 || head.row >= b.Row || head.row < 0) {
