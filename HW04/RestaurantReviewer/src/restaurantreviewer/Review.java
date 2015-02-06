@@ -18,7 +18,7 @@ public class Review {
        r=rest;
        review=rev;
        name=rest.getName();
-       star=s;
+       star=s; //PT -- make sure s in [1,5]
        location=rest.getLocation();
    }
    public Review(){
