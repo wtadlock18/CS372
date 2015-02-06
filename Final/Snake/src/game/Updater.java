@@ -19,6 +19,7 @@ public class Updater extends Thread {
     public void run() {
 
         while (true) {
+            //PT -- Explain how this works. What's getWait() supposed to return?
             //if (mBoard.isPlaying()) {
             if (mBoard.getWait() >= 0) {
                 mBoard.repaint();
