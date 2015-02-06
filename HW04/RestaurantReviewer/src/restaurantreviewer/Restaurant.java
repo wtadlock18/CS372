@@ -19,6 +19,7 @@ public class Restaurant {
     public Restaurant(){
         
     }
+    //PT -- javadoc? -4
     public String getName(){
         return name;
         
