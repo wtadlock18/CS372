@@ -187,6 +187,7 @@ public class Snake {
 
 }
 
+//PT -- does it make sense to have Body be a subclass of Snake, rather than a separate class?
 class Body {
 
     public int row;
